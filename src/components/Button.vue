@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router'
 
 const props = defineProps<{
   label: string
-   route: string
+  route: string
 }>()
 
 const router = useRouter()
