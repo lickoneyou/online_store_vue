@@ -9,7 +9,7 @@ export const useCardStore = defineStore('card', () => {
   }
 
   const removeProduct = function (id: number): void {
-    products.value.filter((productId) => productId !== id)
+    products.value = products.value.filter((productId) => productId !== id)
   }
 
   const removeAllProducts = function (): void {
@@ -17,16 +17,15 @@ export const useCardStore = defineStore('card', () => {
   }
 
   onMounted(() => {
-    const localStorageItems: number[] | null = localStorage.getItem('products')
-
+    const localStorageItems: string | null = localStorage.getItem('products')
     if (localStorageItems) {
-      products.value = localStorageItems
+      products.value = JSON.parse(localStorageItems)
     }
   })
 
-  watch(products, () => {
-    localStorage.setItem('products', products.value)
-  })
+  watch(products, (newValue) => {
+    localStorage.setItem('products', JSON.stringify(newValue))
+  }, { deep: true })
 
   return { addProduct, removeProduct, removeAllProducts, products }
 })
