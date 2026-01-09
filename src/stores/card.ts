@@ -23,9 +23,13 @@ export const useCardStore = defineStore('card', () => {
     }
   })
 
-  watch(products, (newValue) => {
-    localStorage.setItem('products', JSON.stringify(newValue))
-  }, { deep: true })
+  watch(
+    products,
+    (newValue) => {
+      localStorage.setItem('products', JSON.stringify(newValue))
+    },
+    { deep: true },
+  )
 
   return { addProduct, removeProduct, removeAllProducts, products }
 })

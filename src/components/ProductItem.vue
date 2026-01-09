@@ -1,24 +1,9 @@
 <script setup lang="ts">
 import type { Product } from '@/types/Product'
-import { useRouter } from 'vue-router'
-import { Button } from 'primevue'
-import { computed } from 'vue';
-import { useCardStore } from '@/stores/card';
+import AddCardButton from './AddCardButton.vue'
+import Button from './Button.vue'
 
 const props = defineProps<Product>()
-
-const router = useRouter()
-const store = useCardStore()
-
-const inCard = computed(() => store.products.includes(props.id))
-
-const toggleCardHandler = function () {
-  if(inCard.value) {
-    store.removeProduct(props.id)
-  } else {
-    store.addProduct(props.id)
-  }
-}
 </script>
 
 <template>
@@ -39,13 +24,8 @@ const toggleCardHandler = function () {
     <div class="card_container">
       <p class="price">{{ props.price }} $</p>
       <div class="action_buttons">
-        <Button @click="toggleCardHandler" class="like_button" :icon="`pi ${inCard ? 'pi-heart-fill' : 'pi-heart'}`" variant="outlined" />
-        <Button
-          @click="router.push(`/card${props.id}`)"
-          icon="pi pi-shopping-cart"
-          label="Buy Now"
-          class="p-button p-component p-button-secondary"
-        />
+        <AddCardButton :id="props.id" />
+        <Button label="Buy now" :route="`product/${props.id}`" />
       </div>
     </div>
   </div>
