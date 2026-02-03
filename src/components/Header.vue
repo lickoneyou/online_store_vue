@@ -1,12 +1,21 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import { Button } from 'primevue'
 import { useRouter } from 'vue-router'
+
 import { useCardStore } from '@/stores/card'
 import SearchInput from './SearchInput.vue'
+import RegistredModal from './modals/RegistredModal.vue'
 
 const store = useCardStore()
 
 const router = useRouter()
+
+const isShow = ref(false)
+
+function toggleShowModal() {
+  isShow.value = !isShow.value
+}
 </script>
 
 <template>
@@ -19,7 +28,9 @@ const router = useRouter()
     <div class="card_count_wrapper">
       <p class="card_count">{{ store.products.length }}</p>
       <Button @click="router.push('/card')" label="Go to card" severity="secondary" />
+      <Button @click="toggleShowModal" label="Registration" severity="secondary" />
     </div>
+    <RegistredModal :isShow="isShow" @close="toggleShowModal"/>
   </header>
 </template>
 

@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@primeuix/themes": "^2.0.2",
+    "@primevue/forms": "^4.5.4",
     "pinia": "^3.0.4",
     "primeicons": "^7.0.0",
     "primevue": "^4.5.4",
@@ -34,7 +35,6 @@
     "eslint-plugin-vue": "~10.6.2",
     "jiti": "^2.6.1",
     "npm-run-all2": "^8.0.4",
-    "prettier": "3.7.4",
     "sass-embedded": "^1.97.2",
     "typescript": "~5.9.3",
     "vite": "^7.3.0",

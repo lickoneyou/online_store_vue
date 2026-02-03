@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ClearCardModal from '@/components/ClearCardModal.vue'
+import ClearCardModal from '@/components/modals/ClearCardModal.vue'
 import ProductsList from '@/components/ProductsList.vue'
 import { useCardStore } from '@/stores/card'
 import { useProductsStore } from '@/stores/products'
