@@ -4,14 +4,19 @@ import { Form } from '@primevue/forms';
 import { Button, InputText, Message } from 'primevue';
 
 import type {FormSubmitEvent} from '@primevue/forms';
+import { useAuthStore } from '@/stores/auth';
 
 const props = defineProps<{
-  isShow: boolean;
+  isShow: boolean
+  title: string
+  modalType: string
 }>();
 
 const emit = defineEmits<{
   'close': [];
 }>();
+
+const store = useAuthStore()
 
 const show = computed(() => {
   return props.isShow
@@ -24,13 +29,14 @@ const initialValues = {
 
 async function onFormSubmit(event: FormSubmitEvent<Record<string, unknown>>, ) {
   const values = event.values
-  await fetch('http://localhost:3000/users/create', {
-    method: 'Post',
-    body: JSON.stringify(values),
-    headers: {
-      "Content-Type": "application/json",
-    }
-  });
+
+  if(props.modalType === 'register') {
+    store.register(values)
+  }
+
+  if(props.modalType === 'login') {
+    store.login(values)
+  }
 }
 </script>
 
@@ -49,7 +55,7 @@ async function onFormSubmit(event: FormSubmitEvent<Record<string, unknown>>, ) {
           class="registred_form"
           @click.stop=""
         >
-          <p class="form_title">Registred form</p>
+          <p class="form_title">{{ props.title }}</p>
           <div class="flex flex-col gap-1">
             <InputText name="email" type="email" placeholder="Email" fluid />
             <Message

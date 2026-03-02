@@ -4,12 +4,12 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
-} from 'typeorm';
+} from "typeorm";
 
-@Entity('user')
+@Entity("user")
 export class User {
   @PrimaryGeneratedColumn()
-  id: string;
+  id?: string;
 
   @Column()
   email: string;
@@ -18,8 +18,8 @@ export class User {
   password: string;
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt?: Date;
 
   @UpdateDateColumn()
-  updatedAt: Date;
+  updatedAt?: Date;
 }

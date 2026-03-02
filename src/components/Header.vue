@@ -5,16 +5,28 @@ import { useRouter } from 'vue-router'
 
 import { useCardStore } from '@/stores/card'
 import SearchInput from './SearchInput.vue'
-import RegistredModal from './modals/RegistredModal.vue'
+import AuthModal from './modals/AuthModal.vue'
+import { useAuthStore } from '@/stores/auth'
 
 const store = useCardStore()
+const authStore = useAuthStore()
 
 const router = useRouter()
 
-const isShow = ref(false)
+const isShow = ref({
+  register: false,
+  login: false
+})
 
-function toggleShowModal() {
-  isShow.value = !isShow.value
+function toggleShowModal(modalType: 'register' | 'login') {
+  isShow.value[modalType] = !isShow.value[modalType]
+}
+
+function pushProfilePage() {
+  authStore.checkAccessToken()
+  if(authStore.isLogin) {
+    router.push('/profile')
+  }
 }
 </script>
 
@@ -28,9 +40,12 @@ function toggleShowModal() {
     <div class="card_count_wrapper">
       <p class="card_count">{{ store.products.length }}</p>
       <Button @click="router.push('/card')" label="Go to card" severity="secondary" />
-      <Button @click="toggleShowModal" label="Registration" severity="secondary" />
+      <Button v-if="!authStore.isLogin" @click="toggleShowModal('register')" label="Registration" severity="secondary" />
+      <Button v-if="!authStore.isLogin" @click="toggleShowModal('login')" label="LogIn" severity="secondary" />
+      <Button v-else @click="pushProfilePage" label="Profile" severity="secondary" />
     </div>
-    <RegistredModal :isShow="isShow" @close="toggleShowModal"/>
+    <AuthModal :isShow="isShow.register" @close="toggleShowModal('register')" modalType="register" title="Registred form"/>
+    <AuthModal :isShow="isShow.login" @close="toggleShowModal('login')" modalType="login" title="Login form"/>
   </header>
 </template>
 
