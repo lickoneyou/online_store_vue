@@ -9,15 +9,13 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 @Module({
   imports: [
     TypeOrmModule.forFeature([User]),
-    ConfigModule, // Не забудьте импортировать ConfigModule
+    ConfigModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
         secret: configService.get<string>("JWT_SECRET", { infer: true })!,
         signOptions: {
-          expiresIn:
-            configService.get<string>("JWT_EXPIRATION", { infer: true }) ||
-            "5m",
+          expiresIn: Number(configService.get("JWT_EXPIRATION", 300)),
         },
       }),
       inject: [ConfigService],
