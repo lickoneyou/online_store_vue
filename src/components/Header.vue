@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { Button } from 'primevue'
 import { useRouter } from 'vue-router'
 
@@ -18,8 +18,22 @@ const isShow = ref({
   login: false
 })
 
+watch(() => authStore.isLogin, (newValue) => {
+  if (newValue) {
+    closeAllModals();
+  }
+});
+
 function toggleShowModal(modalType: 'register' | 'login') {
-  isShow.value[modalType] = !isShow.value[modalType]
+  if (!isShow.value[modalType]) {
+    closeAllModals();
+  }
+  isShow.value[modalType] = !isShow.value[modalType];
+}
+
+function closeAllModals() {
+  isShow.value.register = false;
+  isShow.value.login = false;
 }
 
 function pushProfilePage() {
@@ -42,7 +56,10 @@ function pushProfilePage() {
       <Button @click="router.push('/card')" label="Go to card" severity="secondary" />
       <Button v-if="!authStore.isLogin" @click="toggleShowModal('register')" label="Registration" severity="secondary" />
       <Button v-if="!authStore.isLogin" @click="toggleShowModal('login')" label="LogIn" severity="secondary" />
-      <Button v-else @click="pushProfilePage" label="Profile" severity="secondary" />
+      <div class="btn_wrapper" v-else>
+        <Button @click="pushProfilePage" label="Profile" severity="secondary" />
+        <Button @click="authStore.logout()" label="LOGOUT" severity="secondary" />
+      </div>
     </div>
     <AuthModal :isShow="isShow.register" @close="toggleShowModal('register')" modalType="register" title="Registred form"/>
     <AuthModal :isShow="isShow.login" @close="toggleShowModal('login')" modalType="login" title="Login form"/>
@@ -70,5 +87,11 @@ header {
 
 h1 {
   cursor: pointer;
+}
+
+.btn_wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 </style>

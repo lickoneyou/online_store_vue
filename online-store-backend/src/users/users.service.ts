@@ -3,6 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { User } from "./user.entity";
 import { CreateUserDto } from "./dto/create-user.dto";
+import { UpdateUserDto } from "./dto/update-user.dto";
 import * as bcrypt from "bcrypt";
 import { JwtService } from "@nestjs/jwt";
 
@@ -41,6 +42,27 @@ export class UsersService {
       },
       access_token,
     };
+  }
+
+  async update(dto: UpdateUserDto) {
+    const user = await this.getUserById(String(dto.id));
+
+    if (!user) {
+      throw new HttpException("User not found", HttpStatus.NOT_FOUND);
+    }
+
+    await this.userRepository.update(
+      { id: String(dto.id) },
+      { name: dto.name, avatar: dto?.avatar || "" },
+    );
+
+    return "Success";
+  }
+
+  async getUserById(id: string) {
+    const user = await this.userRepository.findOne({ where: { id } });
+
+    return user;
   }
 
   async getUserByEmail(email: string) {

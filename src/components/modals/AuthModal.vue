@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed} from 'vue';
+import { computed, ref} from 'vue';
 import { Form } from '@primevue/forms';
-import { Button, InputText, Message } from 'primevue';
+import { Button, InputText } from 'primevue';
 
 import type {FormSubmitEvent} from '@primevue/forms';
 import { useAuthStore } from '@/stores/auth';
@@ -22,6 +22,8 @@ const show = computed(() => {
   return props.isShow
 })
 
+const errorMessage = ref('')
+
 const initialValues = {
   email: '',
   password: ''
@@ -29,13 +31,18 @@ const initialValues = {
 
 async function onFormSubmit(event: FormSubmitEvent<Record<string, unknown>>, ) {
   const values = event.values
+  errorMessage.value = ''
+  
+  try {
+    if(props.modalType === 'register') {
+    await store.register(values)
+    }
 
-  if(props.modalType === 'register') {
-    store.register(values)
-  }
-
-  if(props.modalType === 'login') {
-    store.login(values)
+    if(props.modalType === 'login') {
+      await store.login(values)
+    }
+  } catch(error) {
+    errorMessage.value = error as string
   }
 }
 </script>
@@ -49,7 +56,6 @@ async function onFormSubmit(event: FormSubmitEvent<Record<string, unknown>>, ) {
         @click="emit('close')"
         >
         <Form
-          v-slot="$form"
           :initialValues
           @submit="onFormSubmit"
           class="registred_form"
@@ -57,25 +63,12 @@ async function onFormSubmit(event: FormSubmitEvent<Record<string, unknown>>, ) {
         >
           <p class="form_title">{{ props.title }}</p>
           <div class="flex flex-col gap-1">
-            <InputText name="email" type="email" placeholder="Email" fluid />
-            <Message
-              v-if="$form.email?.invalid"
-              severity="error"
-              size="small"
-              variant="simple"
-              >Wrong email</Message
-            >
+            <InputText name="email" type="email" placeholder="Email" fluid  @input="errorMessage = ''"/>
           </div>
           <div class="flex flex-col gap-1">
-            <InputText name="password" type="password" placeholder="Password" fluid />
-            <Message
-              v-if="$form.password?.invalid"
-              severity="error"
-              size="small"
-              variant="simple"
-              >Wrong password</Message
-            >
+            <InputText name="password" type="password" placeholder="Password" fluid  @input="errorMessage = ''"/>
           </div>
+          <p class="error_message" v-if="errorMessage">{{ errorMessage }}</p>
           <Button type="submit" severity="secondary" label="Submit" />
         </Form>
       </div>
@@ -110,6 +103,10 @@ async function onFormSubmit(event: FormSubmitEvent<Record<string, unknown>>, ) {
     .form_title {
       color: #000000;
       font-weight: 700;
+    }
+
+    .error_message {
+      color: red;
     }
   }
 }

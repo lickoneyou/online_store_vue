@@ -4,6 +4,7 @@ import { CreateUserDto } from "src/users/dto/create-user.dto";
 import { User } from "src/users/user.entity";
 import { UsersService } from "src/users/users.service";
 import * as bcrypt from "bcrypt";
+import { instanceToPlain } from "class-transformer";
 
 @Injectable()
 export class AuthService {
@@ -19,6 +20,7 @@ export class AuthService {
 
     return {
       access_token: this.jwtService.sign(payload),
+      user: instanceToPlain(user),
     };
   }
 

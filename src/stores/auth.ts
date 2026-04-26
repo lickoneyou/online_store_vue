@@ -1,12 +1,15 @@
+import type { LoginErrorData } from '@/types/Error';
+import type { LoginData } from '@/types/LoginData';
+import type { User } from '@/types/User';
 import { jwtDecode, type JwtPayload } from 'jwt-decode';
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 export const useAuthStore = defineStore('auth', () => {
-  const baseUrl = 'http://localhost:3000/';
+  const baseUrl = import.meta.env.VITE_BASE_URL;
   const router = useRouter()
-
+  
   const token = ref(localStorage.getItem('token'))
 
   const isLogin = computed(() => {
@@ -22,28 +25,33 @@ export const useAuthStore = defineStore('auth', () => {
   })
 
   async function login (values: Record<string, unknown>) {
-    const res = await fetch(`${baseUrl}auth/login`, {
+      const res = await fetch(`${baseUrl}/auth/login`, {
       method: 'Post',
       body: JSON.stringify(values),
       headers: {
         "Content-Type": "application/json",
       }
-    });
-    const data = await res.json()
-    
-    const token: string | null = data.access_token
-    if(token) {
-      saveAccessToken(token)
-    }
-  }
+      });
+
+      const data: LoginData | LoginErrorData = await res.json()
+      
+      if(!res.ok) {
+        const errorData = data as LoginErrorData
+
+        throw errorData.message
+      }
+        saveData(data as LoginData)
+   }
 
   function logout () {
     localStorage.removeItem('token')
+    localStorage.removeItem('user')
+    token.value = null
     router.push('/')
   }
 
   async function register(values: Record<string, unknown>) {
-    const res = await fetch(`${baseUrl}users/create`, {
+    const res = await fetch(`${baseUrl}/users/create`, {
         method: 'Post',
         body: JSON.stringify(values),
         headers: {
@@ -51,17 +59,36 @@ export const useAuthStore = defineStore('auth', () => {
         }
       });
 
-    const data = await res.json()
+   const data: LoginData | LoginErrorData = await res.json()
     
+   if(!res.ok) {
+      const errorData = data as LoginErrorData
+
+      throw errorData.message
+    }
+    
+    saveData(data as LoginData)
+  }
+
+  function saveData(data: LoginData) {
     const token: string | null = data.access_token
+    const userData: User | null = data.user
+
     if(token) {
       saveAccessToken(token)
+    }
+    if(userData) {
+      saveUserData(userData)
     }
   }
 
   function saveAccessToken(newToken: string) {
     localStorage.setItem('token', newToken)
     token.value = newToken
+  }
+
+  function saveUserData(userData: User) {
+    localStorage.setItem('user', JSON.stringify(userData))
   }
 
   function checkAccessToken() {
